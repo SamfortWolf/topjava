@@ -17,4 +17,10 @@ public class UserMealWithExceed {
         this.calories = calories;
         this.exceed = exceed;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Date: %d.%02d.%d, Time: %02d:%02d, Description: %s, was eaten %d calories, %b",
+                dateTime.getDayOfMonth(),dateTime.getMonthValue(),dateTime.getYear(),dateTime.getHour(), dateTime.getMinute(), description, calories, exceed);
+    }
 }
