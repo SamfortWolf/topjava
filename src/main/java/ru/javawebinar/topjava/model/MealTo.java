@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class MealTo {
     private final LocalDateTime dateTime;
@@ -8,7 +9,6 @@ public class MealTo {
     private final String description;
 
     private final int calories;
-
 //    private final Supplier<Boolean> excess;
 //    private final AtomicBoolean excess;
     private final boolean excess;
@@ -20,6 +20,21 @@ public class MealTo {
         this.excess = excess;
     }
 
+    public String getDateTime() {
+        return dateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public int getCalories() {
+        return calories;
+    }
+
+    public boolean isExcess() {
+        return excess;
+    }
 //    public Boolean getExcess() {
 //        return excess.get();
 //    }
