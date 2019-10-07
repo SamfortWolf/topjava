@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.util;
 
+import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
 
@@ -7,25 +8,62 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collector;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
+import static org.slf4j.LoggerFactory.getLogger;
 
 public class MealsUtil {
+    private static final Logger log = getLogger(MealsUtil.class);
     private static final int DEFAULT_CALORIES_PER_DAY = 2000;
-    private static List<Meal> meals = Arrays.asList(
+    private static CopyOnWriteArrayList<Meal> meals = new CopyOnWriteArrayList<>(Arrays.asList(
             new Meal(LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500),
             new Meal(LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000),
             new Meal(LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500),
             new Meal(LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000),
             new Meal(LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500),
             new Meal(LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510)
-    );
+    ));
+
+    public static void addMeal(Meal meal) {
+        log.info("Before Meals.Util.addMeal, size is: " + meals.size());
+        meals.add(meal);
+        log.info("After Meals.Util.addMeal, size is: " + meals.size());
+    }
+
+    public static ArrayList<MealTo> getMealsTo() {
+        log.info("Meals.Util.getMealsTo");
+        return (ArrayList<MealTo>) getFiltered(meals, DEFAULT_CALORIES_PER_DAY);
+    }
+
+    public static Meal getMeal(int id) {
+        Meal meal = null;
+        for (Meal m : meals) {
+            if (m.getId().get() == id) {
+                meal = m;
+                break;
+            }
+        }
+        return meal;
+    }
+
+    public static void setMeal(int id, LocalDateTime ldt, String description, int calories) {
+        Meal m = new Meal(ldt, description, calories);
+        if (m != null) {
+            Meal.getCount().decrementAndGet();
+            Meal.getIdCount().decrementAndGet();
+        }
+        m.setId(new AtomicInteger(id));
+        meals.set(meals.indexOf(getMeal(id)), m);
+    }
+
+    public static void deleteMeal(int id) {
+        meals.remove(getMeal(id));
+        Meal.getCount().decrementAndGet();
+    }
 
     public static void main(String[] args) {
 
@@ -33,10 +71,7 @@ public class MealsUtil {
         LocalTime endTime = LocalTime.of(12, 0);
 
         List<MealTo> mealsTo = getFiltered(meals, DEFAULT_CALORIES_PER_DAY);
-        //mealsTo.forEach(System.out::println);
-        for (MealTo mealTo : mealsTo) {
-            System.out.println(mealTo.getDateTime());
-        }
+        mealsTo.forEach(System.out::println);
 
         /*System.out.println(getFilteredByCycle(meals, startTime, endTime, DEFAULT_CALORIES_PER_DAY));
         System.out.println(getFilteredByRecursion(meals, startTime, endTime, DEFAULT_CALORIES_PER_DAY));
@@ -63,11 +98,14 @@ public class MealsUtil {
         Map<LocalDate, Integer> caloriesSumByDate = meals.stream()
                 .collect(
                         Collectors.groupingBy(Meal::getDate, Collectors.summingInt(Meal::getCalories))
-//                      Collectors.toMap(Meal::getDate, Meal::getCalories, Integer::sum)
                 );
         return meals.stream()
                 .map(meal -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
                 .collect(Collectors.toList());
+    }
+
+    public static DateTimeFormatter getFormatter() {
+        return DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     }
 
     /*
@@ -202,14 +240,8 @@ public class MealsUtil {
     }
 */
     private static MealTo createTo(Meal meal, boolean excess) {
-        return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
+        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 
-    public static int getDefaultCaloriesPerDay() {
-        return DEFAULT_CALORIES_PER_DAY;
-    }
 
-    public static List<Meal> getMeals() {
-        return meals;
-    }
 }
