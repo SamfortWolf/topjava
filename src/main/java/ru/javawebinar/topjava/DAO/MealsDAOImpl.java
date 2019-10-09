@@ -3,38 +3,37 @@ package ru.javawebinar.topjava.DAO;
 
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
+import ru.javawebinar.topjava.util.MealMemory;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public class MealsDAOImpl implements MealsDAO {
 
     @Override
     public void addMeal(Meal meal) {
-        MealsUtil.addMeal(meal);
+        MealMemory.addMeal(meal);
     }
 
     @Override
-    public ArrayList<MealTo> getAllMeals() {
-        return MealsUtil.getMealsTo();
+    public ConcurrentSkipListMap<Integer, MealTo> getAllMeals() {
+        return MealsUtil.getMealsToMap(MealMemory.getMemoryMap(), MealsUtil.getDefaultCaloriesPerDay());
     }
 
     @Override
     public void updateMeal(int id, LocalDateTime ldt, String description, int calories) {
-        MealsUtil.setMeal(id, ldt, description, calories);
+        MealMemory.setMeal(id, ldt, description, calories);
     }
 
     @Override
     public void deleteMealById(int id) {
-        MealsUtil.deleteMeal(id);
+        MealMemory.deleteMeal(id);
     }
 
     @Override
     public Meal getMealById(int mealId) {
-        return MealsUtil.getMeal(mealId);
+        return MealMemory.getMeal(mealId);
     }
 }
 

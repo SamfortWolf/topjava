@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import ru.javawebinar.topjava.DAO.MealsDAO;
 import ru.javawebinar.topjava.DAO.MealsDAOImpl;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.util.MealMemory;
+import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -34,14 +36,14 @@ public class MealServlet extends HttpServlet {
         if (action == null) {
             forward = LIST_MEALS;
             req.setAttribute("meals", dao.getAllMeals());
-            req.setAttribute("count", Meal.getCount());
+            req.setAttribute("count", MealMemory.getSize());
             log.info("redirect to meals.jsp (action==null)");
         } else if (action.equalsIgnoreCase("delete")) {
             int mealId = Integer.parseInt(req.getParameter("mealId"));
             dao.deleteMealById(mealId);
             forward = LIST_MEALS;
             req.setAttribute("meals", dao.getAllMeals());
-            req.setAttribute("count", Meal.getCount());
+            req.setAttribute("count", MealMemory.getSize());
         } else if (action.equalsIgnoreCase("edit")) {
             forward = ADD_OR_EDIT;
             int mealId = Integer.parseInt(req.getParameter("mealId"));
@@ -51,7 +53,7 @@ public class MealServlet extends HttpServlet {
         } else if (action.equalsIgnoreCase("meals")) {
             forward = LIST_MEALS;
             req.setAttribute("meals", dao.getAllMeals());
-            req.setAttribute("count", Meal.getCount());
+            req.setAttribute("count", MealMemory.getSize());
             log.info("redirect to meals.jsp");
         } else {
             forward = ADD_OR_EDIT;
@@ -75,7 +77,7 @@ public class MealServlet extends HttpServlet {
         }
         RequestDispatcher dispatcher = req.getRequestDispatcher(LIST_MEALS);
         req.setAttribute("meals", dao.getAllMeals());
-        req.setAttribute("count", Meal.getCount());
+        req.setAttribute("count", MealMemory.getSize());
         dispatcher.forward(req, resp);
         log.info("redirect to meals.jsp drom doPost");
     }

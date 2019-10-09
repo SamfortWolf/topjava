@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,6 +18,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class MealsUtil {
     private static final Logger log = getLogger(MealsUtil.class);
     private static final int DEFAULT_CALORIES_PER_DAY = 2000;
+    private static AtomicInteger idCount = new AtomicInteger(0);
     private static CopyOnWriteArrayList<Meal> meals = new CopyOnWriteArrayList<>(Arrays.asList(
             new Meal(LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500),
             new Meal(LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000),
@@ -28,50 +28,16 @@ public class MealsUtil {
             new Meal(LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510)
     ));
 
-    public static void addMeal(Meal meal) {
-        log.info("Before Meals.Util.addMeal, size is: " + meals.size());
-        meals.add(meal);
-        log.info("After Meals.Util.addMeal, size is: " + meals.size());
-    }
-
-    public static ArrayList<MealTo> getMealsTo() {
-        log.info("Meals.Util.getMealsTo");
-        return (ArrayList<MealTo>) getFiltered(meals, DEFAULT_CALORIES_PER_DAY);
-    }
-
-    public static Meal getMeal(int id) {
-        Meal meal = null;
-        for (Meal m : meals) {
-            if (m.getId().get() == id) {
-                meal = m;
-                break;
-            }
-        }
-        return meal;
-    }
-
-    public static void setMeal(int id, LocalDateTime ldt, String description, int calories) {
-        Meal m = new Meal(ldt, description, calories);
-        if (m != null) {
-            Meal.getCount().decrementAndGet();
-            Meal.getIdCount().decrementAndGet();
-        }
-        m.setId(new AtomicInteger(id));
-        meals.set(meals.indexOf(getMeal(id)), m);
-    }
-
-    public static void deleteMeal(int id) {
-        meals.remove(getMeal(id));
-        Meal.getCount().decrementAndGet();
-    }
-
     public static void main(String[] args) {
 
         LocalTime startTime = LocalTime.of(7, 0);
         LocalTime endTime = LocalTime.of(12, 0);
 
-        List<MealTo> mealsTo = getFiltered(meals, DEFAULT_CALORIES_PER_DAY);
-        mealsTo.forEach(System.out::println);
+        //List<MealTo> mealsTo = getFiltered(meals, DEFAULT_CALORIES_PER_DAY);
+        //mealsTo.forEach(System.out::println);
+        for (Map.Entry<Integer, MealTo> pair : getMealsToMap(MealMemory.getMemoryMap(), DEFAULT_CALORIES_PER_DAY).entrySet()) {
+            System.out.println("Key is: " + pair.getKey() + ", and value is: " + pair.getValue().toString());
+        }
 
         /*System.out.println(getFilteredByCycle(meals, startTime, endTime, DEFAULT_CALORIES_PER_DAY));
         System.out.println(getFilteredByRecursion(meals, startTime, endTime, DEFAULT_CALORIES_PER_DAY));
@@ -82,7 +48,15 @@ public class MealsUtil {
         System.out.println(getFilteredByCollector(meals, startTime, endTime, DEFAULT_CALORIES_PER_DAY));*/
     }
 
-    public static List<MealTo> getFilteredByTime(List<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+    public static int getDefaultCaloriesPerDay() {
+        return DEFAULT_CALORIES_PER_DAY;
+    }
+
+    public static AtomicInteger getIdCount() {
+        return idCount;
+    }
+
+    /*public static List<MealTo> getFilteredByTime(List<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         Map<LocalDate, Integer> caloriesSumByDate = meals.stream()
                 .collect(
                         Collectors.groupingBy(Meal::getDate, Collectors.summingInt(Meal::getCalories))
@@ -103,9 +77,14 @@ public class MealsUtil {
                 .map(meal -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
                 .collect(Collectors.toList());
     }
-
-    public static DateTimeFormatter getFormatter() {
-        return DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+*/
+    public static ConcurrentSkipListMap<Integer, MealTo> getMealsToMap(ConcurrentSkipListMap<Integer, Meal> map, int caloriesPerDay) {
+        Map<LocalDate, Integer> caloriesSumByDate = map.values().stream()
+                .collect(
+                        Collectors.groupingBy(Meal::getDate, Collectors.summingInt(Meal::getCalories))
+                );
+        return new ConcurrentSkipListMap<>(map.values().stream()
+                .collect(Collectors.toMap((Meal meal) -> meal.getId().get(), (Meal meal) -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))));
     }
 
     /*
@@ -240,8 +219,10 @@ public class MealsUtil {
     }
 */
     private static MealTo createTo(Meal meal, boolean excess) {
-        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
+        return new MealTo(meal.getId().get(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 
-
+    public static CopyOnWriteArrayList<Meal> getMeals() {
+        return meals;
+    }
 }
