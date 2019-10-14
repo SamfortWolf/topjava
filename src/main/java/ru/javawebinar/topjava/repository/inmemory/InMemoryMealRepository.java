@@ -2,13 +2,10 @@ package ru.javawebinar.topjava.repository.inmemory;
 
 import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
-import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.web.SecurityUtil;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -46,10 +43,12 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public boolean delete(int id) {
         log.info("delete {}", id);
-        boolean result = repository.get(id) == null ? false : true;
-        if (result)
-            repository.remove(id);
-        return result;
+        Object obj = repository.remove(id);//obj будет равно null, если в мапе не было переданного ключа
+        if (obj!=null){
+            return true;
+        }
+        else
+            return false;
     }
 
     @Override
