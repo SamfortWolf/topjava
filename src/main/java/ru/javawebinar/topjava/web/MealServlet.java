@@ -46,24 +46,25 @@ public class MealServlet extends HttpServlet {
                 mrc.create(meal);
                 response.sendRedirect("meals");
                 break;
-            case "clear":
-                log.info("Clear filters");
-                request.setAttribute("meals", mrc.getAll());
-                request.getRequestDispatcher("/meals.jsp").forward(request, response);
-                break;
             case "filter":
                 log.info("name is: " + action);
-                String dateFrom = request.getParameter("dateFrom");
-                String dateTo = request.getParameter("dateTo");
-                String timeFrom = request.getParameter("timeFrom");
-                String timeTo = request.getParameter("timeTo");
-                log.info(dateFrom + dateTo + timeFrom + timeTo);
-                request.setAttribute("meals", mrc.getAllFiltered(dateFrom, dateTo, timeFrom, timeTo));
-                request.setAttribute("filter", SecurityUtil.authUserFilter());
-                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                String test = request.getParameter("clearButton");
+                if (test != null) {
+                    log.info("Clear filters");
+                    request.setAttribute("meals", mrc.getAll());
+                    request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                } else {
+                    String dateFrom = request.getParameter("dateFrom");
+                    String dateTo = request.getParameter("dateTo");
+                    String timeFrom = request.getParameter("timeFrom");
+                    String timeTo = request.getParameter("timeTo");
+                    log.info(dateFrom + dateTo + timeFrom + timeTo);
+                    request.setAttribute("meals", mrc.getAllFiltered(dateFrom, dateTo, timeFrom, timeTo));
+                    request.setAttribute("filter", SecurityUtil.authUserFilter());
+                    request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                }
                 break;
         }
-
     }
 
     @Override

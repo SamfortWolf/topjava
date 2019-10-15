@@ -46,15 +46,8 @@
             <td>
                 <button type="submit">Filter</button>
             </td>
-        </tr>
-    </table>
-</form>
-<form method="post" action="meals" name="clear">
-    <input type="hidden" name="action" value="clear">
-    <table cellpadding="8" cellspacing="0">
-        <tr>
             <td>
-                <button type="submit">Clear</button>
+                <button type="submit" name="clearButton" value="clear">Clear</button>
             </td>
         </tr>
     </table>
