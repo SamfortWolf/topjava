@@ -4,8 +4,11 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
+import ru.javawebinar.topjava.util.Filter;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -44,10 +47,9 @@ public class InMemoryMealRepository implements MealRepository {
     public boolean delete(int id) {
         log.info("delete {}", id);
         Object obj = repository.remove(id);//obj будет равно null, если в мапе не было переданного ключа
-        if (obj!=null){
+        if (obj != null) {
             return true;
-        }
-        else
+        } else
             return false;
     }
 
@@ -62,6 +64,16 @@ public class InMemoryMealRepository implements MealRepository {
         log.info("getAll");
         return repository.values()
                 .stream()
+                .sorted(Comparator.comparing(Meal::getDate, Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Meal> getAllFilteredByDate(Filter filter) {
+        log.info("getAllFilteredByDate");
+        return repository.values()
+                .stream()
+                .filter(a -> DateTimeUtil.isBetweenDate(a.getDate(), filter.getDateFrom(), filter.getDateTo()))
                 .sorted(Comparator.comparing(Meal::getDate, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
     }

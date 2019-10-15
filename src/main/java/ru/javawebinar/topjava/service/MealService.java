@@ -5,14 +5,18 @@ import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.Filter;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.*;
 
 import ru.javawebinar.topjava.util.exception.NotFoundException;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
 @Service
 public class MealService {
@@ -24,12 +28,20 @@ public class MealService {
         this.repository = repository;
     }
 
-    public List<MealTo> getAll(int userId) {
-        List<MealTo> meals = MealsUtil.getTos(repository.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY)
+    public List<MealTo> getAll(int userId, int userCalsLimit) {
+        List<MealTo> meals = MealsUtil.getTos(repository.getAll(), userCalsLimit)
                 .stream()
                 .filter(mealTo -> mealTo.getUserId() == userId)
                 .collect(Collectors.toList());
         return meals;
+    }
+
+    public List<MealTo> getAllFiltered(int userId, int userCalsLimit, Filter filter) {
+        List<Meal> mealList = repository.getAllFilteredByDate(filter);
+        return (MealsUtil.getFilteredByTimeTos(mealList, userCalsLimit, filter.getTimeFrom(), filter.getTimeTo()))
+                .stream()
+                .filter(mealTo -> mealTo.getUserId() == userId)
+                .collect(Collectors.toList());
     }
 
     public Meal create(Meal meal, int userId) {

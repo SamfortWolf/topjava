@@ -21,28 +21,44 @@
 <h3><a href="index.html">Home</a></h3>
 <hr/>
 <h2>Meals</h2>
-<br>
 <h3>Filters:</h3>
-<form method="get" action="meals">
+<form method="post" action="meals">
+    <input type="hidden" name="action" value="filter">
     <table cellpadding="8" cellspacing="0">
+        <jsp:useBean id="filter" class="ru.javawebinar.topjava.util.Filter" scope="request"/>
         <tr>
             <td align="right" width="100">Date From:</td>
-            <td><input type="date" name="datefrom"></td>
+            <td><input type="date" name="dateFrom" value="${filter.dateFrom}"></td>
             <td>&nbsp&nbsp&nbsp&nbsp</td>
             <td align="right" width="100">Time From:</td>
-            <td><input type="time" name="timefrom" value="00:00"></td>
+            <td><input type="time" name="timeFrom" value="${filter.timeFrom}"></td>
         </tr>
         <tr>
             <td align="right" width="100">Date To:</td>
-            <td><input type="date" name="dateTo"></td>
+            <td><input type="date" name="dateTo" value="${filter.dateTo}"></td>
             <td>&nbsp&nbsp&nbsp&nbsp</td>
             <td align="right" width="100">Time To:</td>
-            <td><input type="time" name="timeTo" value="00:00"></td>
+            <td><input type="time" name="timeTo" value="${filter.timeTo}"></td>
         </tr>
     </table>
-    <button type="submit">Filter</button>
+    <table cellpadding="8" cellspacing="0">
+        <tr>
+            <td>
+                <button type="submit">Filter</button>
+            </td>
+        </tr>
+    </table>
 </form>
-<br>
+<form method="post" action="meals" name="clear">
+    <input type="hidden" name="action" value="clear">
+    <table cellpadding="8" cellspacing="0">
+        <tr>
+            <td>
+                <button type="submit">Clear</button>
+            </td>
+        </tr>
+    </table>
+</form>
 <br>
 <a href="meals?action=create">Add Meal</a>
 <br><br>

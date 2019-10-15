@@ -20,27 +20,50 @@ import java.util.Objects;
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
     private MealRestController mrc;
+    ConfigurableApplicationContext appCtx;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
-            mrc = appCtx.getBean(MealRestController.class);
-        }
+        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        mrc = appCtx.getBean(MealRestController.class);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        String id = request.getParameter("id");
-        Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
-                LocalDateTime.parse(request.getParameter("dateTime")),
-                request.getParameter("description"),
-                Integer.parseInt(request.getParameter("calories")));
+        String action = request.getParameter("action");
+        switch (action) {
+            case "CU":
+                log.info("name is: " + action);
+                String id = request.getParameter("id");
+                Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
+                        LocalDateTime.parse(request.getParameter("dateTime")),
+                        request.getParameter("description"),
+                        Integer.parseInt(request.getParameter("calories")));
 
-        log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        mrc.create(meal);
-        response.sendRedirect("meals");
+                log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
+                mrc.create(meal);
+                response.sendRedirect("meals");
+                break;
+            case "clear":
+                log.info("Clear filters");
+                request.setAttribute("meals", mrc.getAll());
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
+            case "filter":
+                log.info("name is: " + action);
+                String dateFrom = request.getParameter("dateFrom");
+                String dateTo = request.getParameter("dateTo");
+                String timeFrom = request.getParameter("timeFrom");
+                String timeTo = request.getParameter("timeTo");
+                log.info(dateFrom + dateTo + timeFrom + timeTo);
+                request.setAttribute("meals", mrc.getAllFiltered(dateFrom, dateTo, timeFrom, timeTo));
+                request.setAttribute("filter", SecurityUtil.authUserFilter());
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
+        }
+
     }
 
     @Override
@@ -74,5 +97,11 @@ public class MealServlet extends HttpServlet {
     private int getId(HttpServletRequest request) {
         String paramId = Objects.requireNonNull(request.getParameter("id"));
         return Integer.parseInt(paramId);
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        appCtx.close();
     }
 }

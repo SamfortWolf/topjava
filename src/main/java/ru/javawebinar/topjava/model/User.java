@@ -1,5 +1,10 @@
 package ru.javawebinar.topjava.model;
 
+import ru.javawebinar.topjava.util.Filter;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
@@ -19,6 +24,8 @@ public class User extends AbstractNamedEntity {
     private Set<Role> roles;
 
     private int caloriesPerDay = DEFAULT_CALORIES_PER_DAY;
+
+    private Filter filter = new Filter();
 
     public User(Integer id, String name, String email, String password, Role role, Role... roles) {
         this(id, name, email, password, DEFAULT_CALORIES_PER_DAY, true, EnumSet.of(role, roles));
@@ -87,5 +94,9 @@ public class User extends AbstractNamedEntity {
                 ", roles=" + roles +
                 ", caloriesPerDay=" + caloriesPerDay +
                 ')';
+    }
+
+    public Filter getFilter() {
+        return filter;
     }
 }
