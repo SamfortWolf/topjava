@@ -19,6 +19,8 @@
 <body>
 <br>
 <h3><a href="index.html">Home</a></h3>
+<p>Current userId is: ${userId}</p>
+
 <hr/>
 <h2>Meals</h2>
 <h3>Filters:</h3>

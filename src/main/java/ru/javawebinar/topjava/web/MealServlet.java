@@ -52,6 +52,7 @@ public class MealServlet extends HttpServlet {
                 if (test != null) {
                     log.info("Clear filters");
                     request.setAttribute("meals", mrc.getAll());
+                    request.setAttribute("userId", SecurityUtil.authUserId());
                     request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 } else {
                     String dateFrom = request.getParameter("dateFrom");
@@ -61,6 +62,7 @@ public class MealServlet extends HttpServlet {
                     log.info(dateFrom + dateTo + timeFrom + timeTo);
                     request.setAttribute("meals", mrc.getAllFiltered(dateFrom, dateTo, timeFrom, timeTo));
                     request.setAttribute("filter", SecurityUtil.authUserFilter());
+                    request.setAttribute("userId", SecurityUtil.authUserId());
                     request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 }
                 break;
@@ -84,12 +86,14 @@ public class MealServlet extends HttpServlet {
                         new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
                         mrc.get(getId(request));
                 request.setAttribute("meal", meal);
+                request.setAttribute("userId", SecurityUtil.authUserId());
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
             case "all":
             default:
                 log.info("getAll");
                 request.setAttribute("meals", mrc.getAll());
+                request.setAttribute("userId", SecurityUtil.authUserId());
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
