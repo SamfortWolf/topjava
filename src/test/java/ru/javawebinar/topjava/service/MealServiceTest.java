@@ -40,6 +40,12 @@ public class MealServiceTest {
     }
 
     @Test(expected = NotFoundException.class)
+    public void getNotYours() {
+        Meal meal = service.get(MEAL_ID, 100001);
+        assertMatch(meal, MEALS.get(0));
+    }
+
+    @Test(expected = NotFoundException.class)
     public void getNotFound () {
         service.get(1,1);
     }
@@ -47,6 +53,12 @@ public class MealServiceTest {
     @Test
     public void delete() {
         service.delete(MEAL_ID, USER_ID);
+        assertMatch(service.getAll(USER_ID), MEALS);
+    }
+
+    @Test (expected = NotFoundException.class)
+    public void deleteNotYours() {
+        service.delete(MEAL_ID, 100001);
         assertMatch(service.getAll(USER_ID), MEALS);
     }
 
@@ -85,6 +97,16 @@ public class MealServiceTest {
         updated.setCalories(600);
         updated.setDateTime(MEALS.get(1).getDateTime());
         service.update(updated, USER_ID);
+        assertMatch(service.get(MEALS.get(0).getId(), USER_ID), updated);
+    }
+
+    @Test (expected = NotFoundException.class)
+    public void updateNotYours () {
+        Meal updated = new Meal(MEALS.get(0));
+        updated.setDescription("updated");
+        updated.setCalories(600);
+        updated.setDateTime(MEALS.get(1).getDateTime());
+        service.update(updated, 100001);
         assertMatch(service.get(MEALS.get(0).getId(), USER_ID), updated);
     }
 
