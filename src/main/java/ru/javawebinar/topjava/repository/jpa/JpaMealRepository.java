@@ -6,12 +6,10 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.util.ValidationUtil;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.ValidationMode;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,10 +28,16 @@ public class JpaMealRepository implements MealRepository {
             em.persist(meal);
             return meal;
         }
-        else if (meal.getUser().getId()==userId){
-            return em.merge(meal);
+        else if (em.createNamedQuery(Meal.UPDATE)
+                .setParameter("dateTime", meal.getDateTime())
+                .setParameter("description", meal.getDescription())
+                .setParameter("calories", meal.getCalories())
+                .setParameter("userId", userId)
+                .setParameter("id", meal.getId())
+                .executeUpdate() !=0){
+            return meal;
         }
-        else return null;
+        return null;
     }
 
     @Override

@@ -12,8 +12,9 @@ import java.time.LocalTime;
 @NamedQueries({
         @NamedQuery(name = Meal.DELETE, query = "DELETE FROM Meal m WHERE m.id=:id AND m.user.id=:userId"),
         @NamedQuery(name = Meal.GET, query = "SELECT m FROM Meal m WHERE m.id=:id AND m.user.id=:userId"),
-        @NamedQuery(name = Meal.ALL_SORTED, query = "SELECT m FROM Meal m WHERE m.user.id=:userId ORDER BY m.dateTime"),
-        @NamedQuery(name = Meal.ALL_BETWEEN, query = "SELECT m FROM Meal m WHERE m.user.id=:userId AND m.dateTime >= :startTime AND m.dateTime <=:endTime ORDER BY m.dateTime DESC ")
+        @NamedQuery(name = Meal.ALL_SORTED, query = "SELECT m FROM Meal m WHERE m.user.id=:userId ORDER BY m.dateTime DESC "),
+        @NamedQuery(name = Meal.ALL_BETWEEN, query = "SELECT m FROM Meal m WHERE m.user.id=:userId AND m.dateTime >= :startTime AND m.dateTime <=:endTime ORDER BY m.dateTime DESC "),
+        @NamedQuery(name = Meal.UPDATE, query = "UPDATE Meal m SET m.dateTime=:dateTime, m.description=:description, m.calories=:calories WHERE m.user.id=:userId AND  m.id=:id")
 })
 
 @Entity
@@ -24,6 +25,7 @@ public class Meal extends AbstractBaseEntity {
     public static final String GET = "Meal.get";
     public static final String ALL_SORTED = "Meal.getAllSorted";
     public static final String ALL_BETWEEN = "Meal.getAllBetween";
+    public static final String UPDATE = "Meal.update";
 
     @Column(name = "date_time", nullable = false, unique = true)
     private LocalDateTime dateTime;
