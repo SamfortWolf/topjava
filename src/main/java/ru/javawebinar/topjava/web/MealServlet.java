@@ -1,9 +1,6 @@
 package ru.javawebinar.topjava.web;
 
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.StringUtils;
@@ -27,17 +24,12 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
 public class MealServlet extends HttpServlet {
 
-    //private ClassPathXmlApplicationContext springContext;
     GenericXmlApplicationContext springContext;
     private MealRestController mealController;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        /*springContext = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml");
-        ConfigurableEnvironment configurableEnvironment = springContext.getEnvironment();
-        configurableEnvironment.setActiveProfiles("datajpa");
-        springContext.refresh();*/
         springContext = new GenericXmlApplicationContext();
         ConfigurableEnvironment env = springContext.getEnvironment();
         env.setActiveProfiles("datajpa");
