@@ -1,5 +1,5 @@
 ---
 exclude_paths:
   - 'src/main/webapp/**'
-  - '**.md'
+  - 'README.md'
   - '**.sql'
