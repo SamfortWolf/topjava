@@ -6,37 +6,39 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <html>
+<jsp:include page="fragments/headTag.jsp"/>
 <head>
-    <title>Meals</title>
+    <title><spring:message code="app.title"/></title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
-    <h3><a href="index.jsp">Home</a></h3>
+    <h3><a href="index.jsp"><spring:message code="app.home"/></a></h3>
     <hr/>
-    <h2>Meals</h2>
+    <h2><spring:message code="meal.title"/></h2>
     <form method="get" action="meals">
         <input type="hidden" name="action" value="filter">
         <dl>
-            <dt>From Date:</dt>
+            <dt><spring:message code="meal.dfrom"/></dt>
             <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
         </dl>
         <dl>
-            <dt>To Date:</dt>
+            <dt><spring:message code="meal.dto"/></dt>
             <dd><input type="date" name="endDate" value="${param.endDate}"></dd>
         </dl>
         <dl>
-            <dt>From Time:</dt>
+            <dt><spring:message code="meal.tfrom"/></dt>
             <dd><input type="time" name="startTime" value="${param.startTime}"></dd>
         </dl>
         <dl>
-            <dt>To Time:</dt>
+            <dt><spring:message code="meal.tto"/></dt>
             <dd><input type="time" name="endTime" value="${param.endTime}"></dd>
         </dl>
-        <button type="submit">Filter</button>
+        <button type="submit"><spring:message code="meal.filter"/></button>
     </form>
     <hr/>
-    <a href="mealForm">Add Meal</a>
+    <a href="mealForm"><spring:message code="meal.add"/></a>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
@@ -59,12 +61,12 @@
                 </td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
-                <td><a href="mealForm?id=${meal.id}">Update</a></td>
-                <td><a href="meals/delete?id=${meal.id}">Delete</a></td>
-<%--                <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>--%>
+                <td><a href="mealForm?id=${meal.id}"><spring:message code="meal.update"/></a></td>
+                <td><a href="meals/delete?id=${meal.id}"><spring:message code="meal.delete"/></a></td>
             </tr>
         </c:forEach>
     </table>
 </section>
+<jsp:include page="fragments/footer.jsp"/>
 </body>
 </html>
