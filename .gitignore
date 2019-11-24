@@ -5,3 +5,4 @@ target
 log
 *.patch
 *.patch
+/config/REST-Project-1-soapui-project2.xml
