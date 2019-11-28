@@ -29,7 +29,7 @@ public class MealRestController extends AbstractMealController {
         super.delete(id);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update (@RequestBody Meal m, @PathVariable int id) {
         super.update(m,id);
@@ -48,6 +48,16 @@ public class MealRestController extends AbstractMealController {
     public List<MealTo> getBetween (@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
                                     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end){
         return super.getBetween(start.toLocalDate(), start.toLocalTime(), end.toLocalDate(), end.toLocalTime());
+    }
+
+    @GetMapping
+    public  List<MealTo> getAll (){
+        return super.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public  Meal getById (@PathVariable int id){
+        return super.get(id);
     }
 
 }
