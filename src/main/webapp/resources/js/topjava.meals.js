@@ -1,25 +1,19 @@
-// $(document).ready(function () {
+const mealAjaxURL = "ajax/profile/meals/"
 $(function () {
     makeEditable({
-        ajaxUrl: "ajax/admin/users/",
+        ajaxUrl: mealAjaxURL,
         datatableApi: $("#datatable").DataTable({
             "paging": false,
             "info": true,
             "columns": [
                 {
-                    "data": "name"
+                    "data": "dateTime"
                 },
                 {
-                    "data": "email"
+                    "data": "description"
                 },
                 {
-                    "data": "roles"
-                },
-                {
-                    "data": "enabled"
-                },
-                {
-                    "data": "registered"
+                    "data": "calories"
                 },
                 {
                     "defaultContent": "Edit",
@@ -28,13 +22,13 @@ $(function () {
                 {
                     "defaultContent": "Delete",
                     "orderable": false
-                }],
+                }
+            ],
             "order": [
                 [
-                    0,
-                    "asc"
+                    0, "desc"
                 ]
-            ]
+            ], updateTable: filterTable
         })
     });
 });

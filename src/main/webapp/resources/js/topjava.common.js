@@ -1,4 +1,4 @@
-var context, form;
+let context, form;
 
 function makeEditable(ctx) {
     context = ctx;
@@ -36,6 +36,18 @@ function updateTable() {
     $.get(context.ajaxUrl, function (data) {
         context.datatableApi.clear().rows.add(data).draw();
     });
+}
+
+function filterTable() {
+    $.ajax({
+        type: "GET",
+        url: mealAjaxURL+"filter",
+        data: $('#filterForm').serialize()
+    }).done(updateFilteredTable);
+}
+
+function updateFilteredTable(data) {
+    context.datatableApi.clear().rows.add(data).draw();
 }
 
 function save() {
