@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.to;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -7,9 +9,9 @@ import java.util.Objects;
 public class MealTo extends BaseTo {
 
     private final LocalDateTime dateTime;
-
+    @NotBlank
     private final String description;
-
+    @NotNull
     private final int calories;
 
     private final boolean excess;
